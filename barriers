@@ -1,0 +1,35 @@
+store buffer -- for being cache synched all the time
+
+r_b - apply invalidate queue
+w_b - wait for ack from each guys
+
+w_b and r_b -- need to apply both (cpu reads and cpu writes) --collab
+
+loadload loadstore -- acquire (need both) (for reading before doing)
+loadstore storestore -- release (need both) (for writing before doing)
+
+data = 42      if (ready)
+storestore     loadload
+read = tr      asssert(data == 42)
+__________________________________
+... this did   seen in order...
+
+volatile -- acq/rel semantics (r/w)  (in Java only, c++ doesn't care, use atomics)
+
+y = tr         x = tr
+x = fals       y = fals
+assert(x)      assert(y)         need storeload here
+
+hard cache reset:
+  context switch
+  mutexes
+
+problems:
+  no synch
+  lock free alg
+
+Mem models:
+1. seq cons -- always read a write barriers
+2. stringly ord (TotalStoreOrder - x86) -- acq - release semantics (no store load only)
+3. weak (arm, powerpc, itanium) -- guarantee no reorders in local vars, no barriers. Cuz mobile and servers
+4. super weak -- no barriers and data dep lines may be reordered
